@@ -1,0 +1,5 @@
+.nextflow*
+test_input
+test_output
+work
+trace.tsv*
