@@ -21,6 +21,8 @@ A tsv file named `nextclade_lineages.tsv` will be written into `outdir`, with th
 See the [nextclade docs](https://docs.nextstrain.org/projects/nextclade/en/stable/user/output-files/04-results-tsv.html)
 for more details on these fields.
 
+The fields: `sequencingRunID`, `nextcladeDatasetName` and `nextcladeDatasetVersion` are added by this pipeline for data provenance purposes.
+
 ```
 sequencingRunID
 index
