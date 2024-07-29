@@ -15,12 +15,12 @@ process prepare_multi_fasta {
     consensus_subdir = params.consensus_subdir
     awk_string = '/^>/ { print $0 }; !/^>/ { printf "%s", $0 }; END { print ""}'
     """
-    export LATEST_ARTIC_ANALYSIS_VERSION=\$(ls -1 ${run_id} | grep "ncov2019-artic-nf-.*-output" | cut -d '-' -f 4 | tail -n 1 | tr -d \$'\\n')
-    cp ${analysis_dir}/ncov2019-artic-nf-\${LATEST_ARTIC_ANALYSIS_VERSION}-output/${run_id}.qc.csv .
+    export LATEST_ARTIC_ANALYSIS_VERSION=\$(ls -1 ${run_id} | grep "${params.artic_prefix}-artic-nf-.*-output" | cut -d '-' -f 4 | tail -n 1 | tr -d \$'\\n')
+    cp ${analysis_dir}/*-artic-nf-\${LATEST_ARTIC_ANALYSIS_VERSION}-output/${run_id}.qc.csv .
     tail -n+2 ${run_id}.qc.csv | grep -iv '^NEG' | cut -d ',' -f 1 > ${run_id}_samples.csv
     touch ${run_id}.consensus.fa
     while IFS="," read -r sample_id; do
-    cat ${analysis_dir}/ncov2019-artic-nf-\${LATEST_ARTIC_ANALYSIS_VERSION}-output/${consensus_subdir}/\${sample_id}*.fa \
+    cat ${analysis_dir}/${params.artic_prefix}-artic-nf-\${LATEST_ARTIC_ANALYSIS_VERSION}-output/${consensus_subdir}/\${sample_id}*.fa \
 	| awk -F "_" '${awk_string}' \
 	>> ${run_id}.consensus.fa;
     done < ${run_id}_samples.csv
@@ -45,13 +45,22 @@ process nextclade_dataset_list {
 	--json \
 	> nextclade_dataset_${dataset_name}.json
 
+    export nextclade_ver=\$(nextclade --version | awk '{print \$2}')
+
+
     get_dataset_version.py \
-	--dataset-list nextclade_dataset_${dataset_name}.json \
-	--dataset-name ${dataset_name} \
-	> nextclade_dataset_${dataset_name}_version.tsv
+	--nextclade_json nextclade_dataset_${dataset_name}.json \
+	--dataset_name ${dataset_name} \
+    --nextclade_version \$nextclade_ver  > nextclade_dataset_${dataset_name}_version.tsv
     """
 }
 
+
+
+
+
+
+  
 process nextclade_run {
 
     tag { run_id }
@@ -60,7 +69,7 @@ process nextclade_run {
     tuple val(run_id), path(consensus_multi_fasta), path(artic_qc), path(nextclade_dataset_version), path(dataset)
 
     output:
-    tuple val(run_id), path("${run_id}_nextclade.tsv")
+    tuple val(run_id), path("${run_id}_nextclade_with_version.tsv")
 
     script:
     """
@@ -74,11 +83,11 @@ process nextclade_run {
 	${consensus_multi_fasta}
 
     # add sequencingRunID column to tsv
-    awk 'BEGIN{FS=OFS="\t"} {print (NR>1 ? "${run_id}" : "sequencingRunID"), \$0}' ${run_id}_nextclade.tsv > ${run_id}_nextclade.tsv.tmp
+    awk 'BEGIN{FS=OFS="\t"} {print (NR>1 ? "${run_id}" : "sequencing_run_id"), \$0}' ${run_id}_nextclade.tsv > ${run_id}_nextclade.tsv.tmp
 
     add_dataset_version.py \
 	--nextclade-dataset-version ${nextclade_dataset_version} \
 	--nextclade-tsv ${run_id}_nextclade.tsv.tmp \
-	> ${run_id}_nextclade.tsv
+	> ${run_id}_nextclade_with_version.tsv
     """
 }
