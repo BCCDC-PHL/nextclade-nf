@@ -54,12 +54,6 @@ process nextclade_dataset_list {
     --nextclade_version \$nextclade_ver  > nextclade_dataset_${dataset_name}_version.tsv
     """
 }
-
-
-
-
-
-
   
 process nextclade_run {
 
