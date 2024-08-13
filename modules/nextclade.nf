@@ -77,7 +77,7 @@ process nextclade_run {
 	${consensus_multi_fasta}
 
     # add sequencingRunID column to tsv
-    awk 'BEGIN{FS=OFS="\t"} {print (NR>1 ? "${run_id}" : "sequencing_run_id"), \$0}' ${run_id}_nextclade.tsv > ${run_id}_nextclade.tsv.tmp
+    awk 'BEGIN{FS=OFS="\t"} {print (NR>1 ? "${run_id}" : "sequencingRunID"), \$0}' ${run_id}_nextclade.tsv > ${run_id}_nextclade.tsv.tmp
 
     add_dataset_version.py \
 	--nextclade-dataset-version ${nextclade_dataset_version} \
