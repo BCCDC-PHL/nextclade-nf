@@ -3,14 +3,10 @@
 import argparse
 import json
 
-
-
 def main(args):
 
-
-    with open(args.nextclade_json, 'r') as file:
-        nextclade_info = json.load(file)
-
+    with open(args.nextclade_json, 'r') as f:
+        nextclade_info = json.load(f)
 
     for item in nextclade_info:
         current_version_tag = item["version"]["tag"]

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-import csv
-import sys
-import os
 import argparse
+import csv
+import json
+import os
+import sys
 
 def parse_dataset_version(nextclade_dataset_version):
     """
@@ -38,7 +39,6 @@ def parse_nextclade_output(nextclade_tsv):
         reader = csv.DictReader(f, delimiter='\t')
         for row in reader:
             nextclade_output.append(row)
-
     return nextclade_header, nextclade_output
 
 def main(args):
