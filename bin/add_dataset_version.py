@@ -18,17 +18,16 @@ def parse_dataset_version(nextclade_dataset_version):
         reader = csv.DictReader(f, delimiter='\t')
         for row in reader:
             dataset_version = row
-            break  # Since we expect only one row, break after the first
     return dataset_version
 
 def parse_nextclade_output(nextclade_tsv):
     """
     Parse nextclade output into a dictionary
 
-    :param nextclade_tsv: Nextclade output TSV file path
+    :param nextclade_tsv: Nextclade output tsv file
     :type nextclade_tsv: str
-    :return: Header and list of nextclade output dictionaries
-    :rtype: tuple(list, list)
+    :return: Dictionary of nextclade output
+    :rtype: dict
     """
     with open(nextclade_tsv, 'r') as f:
         reader = csv.reader(f, delimiter='\t')
@@ -48,20 +47,17 @@ def main(args):
     
     nextclade_header, nextclade_data = parse_nextclade_output(args.nextclade_tsv)
 
-    # Ensure the version keys are added to the header
     output_fieldnames = nextclade_header + version_keys
 
-    # Create a writer object with the correct fieldnames
     writer = csv.DictWriter(sys.stdout, dialect='excel-tab', fieldnames=output_fieldnames, extrasaction='ignore', lineterminator=os.linesep)
 
     writer.writeheader()
     for row in nextclade_data:
-        # Add the dataset version values to each row
         for key in version_keys:
             row[key] = dataset_version[key]
         try:
             writer.writerow(row)
-        except BrokenPipeError:
+        except BrokenPipeError as e:
             pass
 
 if __name__ == '__main__':
