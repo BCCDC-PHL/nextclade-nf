@@ -8,8 +8,8 @@ def main(args):
     with open(args.nextclade_json, 'r') as f:
         nextclade_info = json.load(f)
 
-    for item in nextclade_info:
-        current_version_tag = item["version"]["tag"]
+
+    current_version_tag = nextclade_info["version"]["tag"]
 
     print('\t'.join(['nextcladeDatasetName', 'nextcladeDatasetVersion', 'nextcladeVersion']))
     print('\t'.join([args.dataset_name, current_version_tag, args.nextclade_version]))
