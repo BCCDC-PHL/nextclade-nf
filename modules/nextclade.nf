@@ -41,17 +41,17 @@ process nextclade_dataset_list {
     script:
     """
     nextclade dataset list \
-	--name=${dataset_name} \
-	--json \
-	> nextclade_dataset_${dataset_name}.json
+        --name=${dataset_name} \
+        --json \
+        > nextclade_dataset_${dataset_name}.json
 
     export nextclade_ver=\$(nextclade --version | awk '{print \$2}')
 
 
     get_dataset_version.py \
-	--nextclade_json nextclade_dataset_${dataset_name}.json \
-	--dataset_name ${dataset_name} \
-    --nextclade_version \$nextclade_ver  > nextclade_dataset_${dataset_name}_version.tsv
+        --nextclade_json nextclade_dataset_${dataset_name}.json \
+        --dataset_name ${dataset_name} \
+        --nextclade_version \$nextclade_ver  > nextclade_dataset_${dataset_name}_version.tsv
     """
 }
   

@@ -3,15 +3,36 @@
 ![push main](https://github.com/BCCDC-PHL/nextclade-nf/actions/workflows/push_main.yml/badge.svg)
 
 Call viral lineages using [nextclade](https://github.com/nextstrain/nextclade) across many sequencing runs.
-This pipeline is designed to take the output of [BCCDC-PHL/ncov2019-artic-nf](https://github.com/BCCDC-PHL/ncov2019-artic-nf) as its input,
+This pipeline is designed to take the output of [BCCDC-PHL/ncov2019-artic-nf](https://github.com/BCCDC-PHL/ncov2019-artic-nf) or [BCCDC-PHL/mpxv-artic-nf](https://github.com/BCCDC-PHL/mpxv-artic-nf) as its input,
 and makes some assumptions about directory structures for finding consensus sequences to analyze.
 
 ## Usage
+
+Some default parameters are set to be compatible with the outputs of [BCCDC-PHL/ncov2019-artic-nf](https://github.com/BCCDC-PHL/ncov2019-artic-nf). When analyzing those outputs, the following command can be used:
+
 ```
 nextflow run BCCDC-PHL/nextclade-nf \
+  -profile conda \
+  --cache ${HOME}/.conda/envs \
   --analysis_parent_dir <analysis_parent_dir> \
   --dataset_dir /path/to/nextclade-data/sars-cov-2 \
   --dataset_name sars-cov-2 \
+  --outdir <outdir>
+```
+
+...where `<analysis_parent_dir>` should be a directory that contains one sub-directory per sequencing run, each of which has an `ncov2019-artic-nf-vX.Y-output` sub-directory.
+
+When analyzing outputs of the [BCCDC-PHL/mpxv-artic-nf](https://github.com/BCCDC-PHL/mpxv-artic-nf) pipeline, some default parameters must be overridden:
+
+```
+nextflow run BCCDC-PHL/nextclade-nf \
+  -profile conda \
+  --cache ${HOME}/.conda/envs \
+  --analysis_parent_dir <analysis_parent_dir> \
+  --consensus_subdir "mpxvIllumina_sequenceAnalysis_callConsensusFreebayes" \
+  --dataset_dir /path/to/nextclade-data/mpox \
+  --dataset_name hMPXV \
+  --artic_prefix mpxv \
   --outdir <outdir>
 ```
 
@@ -21,7 +42,7 @@ A tsv file named `nextclade_lineages.tsv` will be written into `outdir`, with th
 See the [nextclade docs](https://docs.nextstrain.org/projects/nextclade/en/stable/user/output-files/04-results-tsv.html)
 for more details on these fields.
 
-The fields: `sequencingRunID`, `nextcladeDatasetName` and `nextcladeDatasetVersion` are added by this pipeline for data provenance purposes.
+The fields: `sequencingRunID`, `nextcladeDatasetName`, `nextcladeDatasetVersion`, and `nextcladeVersion` are added by this pipeline for data provenance purposes.
 
 ```
 sequencingRunID
@@ -101,4 +122,5 @@ warnings
 errors
 nextcladeDatasetName
 nextcladeDatasetVersion
+nextcladeVersion
 ```

@@ -5,20 +5,24 @@ import json
 import os
 import sys
 
-def parse_dataset_version(nextclade_dataset_version):
+from pathlib import Path
+
+
+def parse_nextclade_dataset_version_file(nextclade_dataset_version_file: Path) -> dict:
     """
     Parse dataset version into a dictionary
 
-    :param nextclade_dataset_version: Dataset version TSV file path
-    :type nextclade_dataset_version: str
-    :return: Dictionary of dataset version
+    :param nextclade_dataset_version_file: Nextclade dataset version TSV file path
+    :type nextclade_dataset_version: Path
+    :return: Dictionary of dataset version. Keys: 'nextcladeDatasetName', 'nextcladeDatasetVersion', 'nextcladeVersion'
     :rtype: dict
     """
     dataset_version = {}
-    with open(nextclade_dataset_version, 'r') as f:
+    with open(nextclade_dataset_version_file, 'r') as f:
         reader = csv.DictReader(f, delimiter='\t')
         for row in reader:
             dataset_version = row
+
     return dataset_version
 
 def parse_nextclade_output(nextclade_tsv):
@@ -42,7 +46,7 @@ def parse_nextclade_output(nextclade_tsv):
     return nextclade_header, nextclade_output
 
 def main(args):
-    dataset_version = parse_dataset_version(args.nextclade_dataset_version)
+    dataset_version = parse_nextclade_dataset_version_file(args.nextclade_dataset_version)
     version_keys = sorted(dataset_version.keys())
     
     nextclade_header, nextclade_data = parse_nextclade_output(args.nextclade_tsv)
