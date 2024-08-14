@@ -39,7 +39,8 @@ process nextclade_dataset_list {
 
     script:
     """
-
+    export nextclade_ver=\$(nextclade --version | awk '{print \$2}')
+    
     get_dataset_version.py \
         --nextclade_json ${params.dataset_dir}/pathogen.json \
         --dataset_name ${dataset_name} \
