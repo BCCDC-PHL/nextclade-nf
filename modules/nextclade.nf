@@ -16,7 +16,7 @@ process prepare_multi_fasta {
     awk_string = '/^>/ { print $0 }; !/^>/ { printf "%s", $0 }; END { print ""}'
     """
     export LATEST_ARTIC_ANALYSIS_VERSION=\$(ls -1 ${run_id} | grep "${params.artic_prefix}-artic-nf-.*-output" | cut -d '-' -f 4 | tail -n 1 | tr -d \$'\\n')
-    cp ${analysis_dir}/*-artic-nf-\${LATEST_ARTIC_ANALYSIS_VERSION}-output/${run_id}.qc.csv .
+    cp ${analysis_dir}/${params.artic_prefix}-artic-nf-\${LATEST_ARTIC_ANALYSIS_VERSION}-output/${run_id}.qc.csv .
     tail -n+2 ${run_id}.qc.csv | grep -iv '^NEG' | cut -d ',' -f 1 > ${run_id}_samples.csv
     touch ${run_id}.consensus.fa
     while IFS="," read -r sample_id; do
