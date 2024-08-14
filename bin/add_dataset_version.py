@@ -1,29 +1,29 @@
 #!/usr/bin/env python3
-
 import argparse
 import csv
 import json
 import os
 import sys
 
+from pathlib import Path
 
-def parse_dataset_version(nextclade_dataset_version):
+
+def parse_nextclade_dataset_version_file(nextclade_dataset_version_file: Path) -> dict:
     """
     Parse dataset version into a dictionary
 
-    :param dataset_version: Dataset version
-    :type dataset_version: str
-    :return: Dictionary of dataset version
+    :param nextclade_dataset_version_file: Nextclade dataset version TSV file path
+    :type nextclade_dataset_version: Path
+    :return: Dictionary of dataset version. Keys: 'nextcladeDatasetName', 'nextcladeDatasetVersion', 'nextcladeVersion'
     :rtype: dict
     """
     dataset_version = {}
-    with open(nextclade_dataset_version, 'r') as f:
+    with open(nextclade_dataset_version_file, 'r') as f:
         reader = csv.DictReader(f, delimiter='\t')
         for row in reader:
             dataset_version = row
 
     return dataset_version
-
 
 def parse_nextclade_output(nextclade_tsv):
     """
@@ -34,7 +34,6 @@ def parse_nextclade_output(nextclade_tsv):
     :return: Dictionary of nextclade output
     :rtype: dict
     """
-    nextclade_header = []
     with open(nextclade_tsv, 'r') as f:
         reader = csv.reader(f, delimiter='\t')
         nextclade_header = next(reader)
@@ -44,12 +43,10 @@ def parse_nextclade_output(nextclade_tsv):
         reader = csv.DictReader(f, delimiter='\t')
         for row in reader:
             nextclade_output.append(row)
-
     return nextclade_header, nextclade_output
 
-
 def main(args):
-    dataset_version = parse_dataset_version(args.nextclade_dataset_version)
+    dataset_version = parse_nextclade_dataset_version_file(args.nextclade_dataset_version)
     version_keys = sorted(dataset_version.keys())
     
     nextclade_header, nextclade_data = parse_nextclade_output(args.nextclade_tsv)
@@ -67,10 +64,9 @@ def main(args):
         except BrokenPipeError as e:
             pass
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--nextclade-tsv')
-    parser.add_argument('--nextclade-dataset-version')
+    parser.add_argument('--nextclade-tsv', required=True)
+    parser.add_argument('--nextclade-dataset-version', required=True)
     args = parser.parse_args()
     main(args)
